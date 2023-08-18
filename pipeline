@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage ('terraform installation'){
+            steps{
+                sh 'sudo yum install -y yum-utils shadow-utils'
+                sh 'sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo'
+                sh 'sudo yum -y install terraform'
+            } 
+            
+        }
+        stage ('clone'){
+            steps{
+                git(
+                   branch: 'main',
+                   credentialsId: 'aws',
+                   url: 'repo link'
+                    )
+            }
+        }
+        stage ('initialization'){
+            steps {
+                sh 'sudo terraform init'
+                
+            }
+        }
+        stage ('validation'){
+            steps{
+                sh 'sudo terraform validate '
+            }
+        }
+        stage ('deploy'){
+            steps {
+                sh 'sudo terraform apply --auto-approve'
+            }
+        }
+    }
+}
